@@ -5,127 +5,124 @@
 <h1 align="center">McClaw</h1>
 
 <p align="center">
-  find the right local LLM for your mac<br/>
-  <em>stop guessing if that 70B model will fit</em>
+  Find the right local LLM for your Mac hardware
 </p>
 
 <p align="center">
-  <a href="https://mcclaw.it.com">live site</a> •
-  <a href="https://x.com/deeflectcom">twitter</a>
+  <a href="https://mcclaw.it.com">Live Site</a> •
+  <a href="https://x.com/deeflectcom">Twitter</a>
 </p>
 
 ---
 
-![og image](assets/og-image.jpg)
+![McClaw](assets/og-image.jpg)
 
-## the problem
+## About
 
-running local LLMs on mac is confusing:
+A tool that helps Mac users figure out which local LLMs can actually run on their hardware. You input your Mac Mini specs (chip and RAM) and get recommendations with performance estimates.
 
-- "will this model fit in 32GB RAM?"
-- "q4_k_m vs q8_0... what?"
-- "which one is good for coding?"
+### The Problem
 
-most people download something too big, it crashes, they give up and go back to paying for API calls.
+Running LLMs locally on Mac is confusing:
+- "Will this 70B model fit in my 32GB RAM?"
+- "What quantization should I use?"
+- "Which model is best for coding vs general chat?"
 
-## the solution
+Most people download something too big, it crashes, and they give up.
 
-a 3-step wizard:
+### The Solution
 
-1. pick your mac (M4 / M4 Pro, RAM size)
-2. pick your experience level  
-3. see exactly which models fit
+A simple 3-step wizard:
+1. Select your Mac (M4/M4 Pro, RAM amount)
+2. Select your experience level
+3. See exactly which models fit your hardware
 
-no guessing. no trial and error.
+![Setup wizard](screenshots/setup-wizard.jpg)
 
-![setup wizard](screenshots/setup-wizard.jpg)
+## Tech Stack
 
-## tech
+| Layer | Technology | Notes |
+|-------|------------|-------|
+| Frontend | React 18 + TypeScript | Stable, nothing fancy needed |
+| Animations | Framer Motion | Smooth wizard transitions |
+| Styling | Tailwind CSS 3 | Fast iteration |
+| Backend | Convex | Only for cloud model price comparisons |
+| Hosting | Vercel | Free tier handles everything |
 
-| what | why |
-|------|-----|
-| **React 18 + TS** | stable, nothing fancy needed |
-| **Framer Motion** | smooth wizard transitions |
-| **Tailwind** | fast iteration |
-| **Convex** | just for cloud model price comparison |
-| **Vercel** | free tier |
+### Why No Server?
 
-### why no backend?
+The model database is static data compiled into the frontend. This means:
+- Instant filtering with no API calls
+- Works offline after first load
+- Updates are just a redeploy
 
-all the model data is static — compiled into the frontend. benefits:
+## Model Database
 
-- instant filtering (no API calls)
-- works offline after first load
-- updating = just redeploy
+50+ models with multiple quantization variants. Some examples:
 
-## the data
+| Model | Parameters | q4_k_m RAM | Category |
+|-------|------------|------------|----------|
+| Qwen 2.5 Coder 14B | 14B | 10.5 GB | Coding |
+| Llama 3.1 8B | 8B | 6.5 GB | General |
+| DeepSeek R1 32B | 32B | 22 GB | Reasoning |
+| LLaVA 7B | 7B | 6 GB | Vision |
 
-50+ models with variants. sample:
+Full model compatibility table available in [data/models.md](data/models.md)
 
-| model | params | q4_k_m RAM | category |
-|-------|--------|------------|----------|
-| Qwen 2.5 Coder 14B | 14B | 10.5 GB | coding |
-| Llama 3.1 8B | 8B | 6.5 GB | general |
-| DeepSeek R1 32B | 32B | 22 GB | reasoning |
-| LLaVA 7B | 7B | 6 GB | vision |
-
-full model database in [data/models.md](data/models.md)
-
-### device configs
+### Device Configurations
 
 ```typescript
 devices = {
-  "m4-16":    { usableRam: 12 },  // ~4GB for macOS
-  "m4-24":    { usableRam: 18 },
-  "m4-32":    { usableRam: 26 },
-  "m4pro-48": { usableRam: 40 },
-  "m4pro-64": { usableRam: 54 },
+  "m4-16":    { ram: 16, usableRam: 12 },  // ~4GB reserved for macOS
+  "m4-24":    { ram: 24, usableRam: 18 },
+  "m4-32":    { ram: 32, usableRam: 26 },
+  "m4pro-48": { ram: 48, usableRam: 40 },
+  "m4pro-64": { ram: 64, usableRam: 54 },
 }
 ```
 
-## how matching works
+## How Matching Works
 
 ```typescript
-// pseudocode
+// Filter models that fit in available RAM
 models
   .flatMap(model => model.variants)
   .filter(variant => variant.ramGb <= device.usableRam)
-  .sort(by benchmark scores, then popularity)
+  .sort(by benchmark scores, then by popularity)
 ```
 
-![results](screenshots/results.jpg)
+![Results page](screenshots/results.jpg)
 
-## design
+## Design Notes
 
-went apple-inspired on purpose:
-- centered content
-- minimal chrome
-- big tappable buttons
-- progress dots
+The UI is intentionally Apple-inspired:
+- Centered content with minimal chrome
+- Large, tappable buttons
+- Progress indicators
+- Clean typography
 
-feels familiar to mac users, builds trust.
+This feels familiar to Mac users and builds trust.
 
-### progressive disclosure
+### Progressive Disclosure
 
-beginners get "Top Picks" — curated recommendations.
-experts get the full table with all quantizations and benchmarks.
+Beginners see a curated "Top Picks" view with recommendations. Power users get the full table with all quantization options and benchmark scores.
 
-## quantization quick ref
+## Quantization Reference
 
-| quant | quality | size | use case |
-|-------|---------|------|----------|
-| **q4_k_m** | 95% | 50% | default choice |
-| **q8_0** | 99% | 100% | when quality matters |
-| **fp16** | 100% | 200% | benchmarking only |
+| Quantization | Quality | Size | Recommended Use |
+|--------------|---------|------|-----------------|
+| q4_k_m | ~95% | 50% | Default choice for most users |
+| q8_0 | ~99% | 100% | When quality matters |
+| fp16 | 100% | 200% | Benchmarking only |
 
-## maybe later
+## Ideas for Later
 
-- [ ] MacBook support (not just Mac Mini)
-- [ ] user-submitted performance reports
-- [ ] direct Ollama integration
+- MacBook support (currently Mac Mini only)
+- User-submitted performance reports
+- Direct Ollama integration to detect installed models
 
 ---
 
-built by [@deeflectcom](https://x.com/deeflectcom) for the [OpenClaw](https://openclaw.ai) community
+Built by [@deeflectcom](https://x.com/deeflectcom) for the [OpenClaw](https://openclaw.ai) community
 
-model data from Ollama, official papers, Open LLM Leaderboard, and personal testing on M4 Mac Mini 32GB
+Model data sourced from Ollama, official papers, Open LLM Leaderboard, and personal testing on M4 Mac Mini 32GB.
