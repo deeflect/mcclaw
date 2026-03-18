@@ -5,11 +5,19 @@
 <h1 align="center">McClaw</h1>
 
 <p align="center">
-  Find the right local LLM for your Mac hardware
+  <strong>Find which local LLMs actually run on your Mac</strong>
+</p>
+
+<p align="center">
+  <a href="https://mcclaw.it.com"><img src="https://img.shields.io/badge/Live-mcclaw.it.com-black?style=flat-square" alt="Live Site" /></a>
+  <img src="https://img.shields.io/badge/models-340%2B-blue?style=flat-square" alt="340+ models" />
+  <img src="https://img.shields.io/badge/platform-macOS-lightgrey?style=flat-square" alt="macOS" />
+  <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="MIT License" />
 </p>
 
 <p align="center">
   <a href="https://mcclaw.it.com">Live Site</a> •
+  <a href="https://blog.deeflect.com">Blog</a> •
   <a href="https://x.com/deeflectcom">Twitter</a>
 </p>
 
